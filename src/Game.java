@@ -2,7 +2,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 public class Game implements Comparable<Game>, Cloneable {
-    int profit = 0;
+    int playerProfit = 0;
+    int taxCollectorProfit = 0;
     ArrayList<Integer> moves = new ArrayList<>();
     boolean[] available; // Used to more efficiently determine if a cheque is available. We could use cheques.contains(i), but that is much less efficient than available[i]
     ArrayList<Integer>[] factors;
@@ -34,13 +35,14 @@ public class Game implements Comparable<Game>, Cloneable {
             ArrayList<Integer> chequesTaken = new ArrayList<>();
 
             // Take your cheque
-            profit += cheque;
+            playerProfit += cheque;
             available[cheque] = false;
             moves.add(cheque);
             chequesTaken.add(cheque);
 
             // Let the tax collector take his cheques
             for (int i : factors[cheque]) {
+                taxCollectorProfit += i;
                 available[i] = false;
                 chequesTaken.add(i);
             }
@@ -70,9 +72,13 @@ public class Game implements Comparable<Game>, Cloneable {
         return moves;
     }
 
+    public int getNetProfit() {
+        return playerProfit - taxCollectorProfit;
+    }
+
     @Override
     public int compareTo(Game o) {
-        return this.profit - o.profit;
+        return this.getNetProfit() - o.getNetProfit();
     }
 
     public Object clone() throws CloneNotSupportedException {
@@ -92,7 +98,7 @@ public class Game implements Comparable<Game>, Cloneable {
     @Override
     public String toString() {
         return "Game{" +
-                "profit=" + profit +
+                "profit=" + playerProfit +
                 ", moves=" + moves +
                 ", available=" + Arrays.toString(available) +
                 ", factors=" + Arrays.toString(factors) +

@@ -8,7 +8,7 @@ public class Main {
             Game game = new Game(i);
             Game bestGame = bruteForceBestGame(game);
 
-            System.out.println("Best game with " + i + " cheques has a profit of $" + bestGame.profit + ", using the following moves: " + bestGame.moves + " (" + (System.currentTimeMillis() - start) + "ms)");
+            System.out.println(i + " cheques: Net profit of $" + bestGame.playerProfit + "-$" + bestGame.taxCollectorProfit + "=$" + bestGame.getNetProfit() + ", using moves: " + bestGame.moves + " (" + (System.currentTimeMillis() - start) + "ms)");
         }
     }
 
