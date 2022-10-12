@@ -1,16 +1,29 @@
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.PrintStream;
+import java.io.*;
+import java.nio.file.Files;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Locale;
-import java.util.Scanner;
+import java.util.*;
 
 public class Main {
     public static void main(String[] args) throws CloneNotSupportedException, IOException {
         Scanner in = new Scanner(System.in);
+
+        // Move old logs to archive directory. Only newest 5 in main logs dir
+        File logDir = new File("logs");
+        logDir.mkdir();
+
+        File logArchive = new File("logs/archived");
+        logArchive.mkdir();
+
+        File[] logs = logDir.listFiles(pathname -> !pathname.getName().equals("archived"));
+
+        if (logs.length > 5) {
+            Arrays.sort(logs, (o1, o2) -> (int) (o1.lastModified() - o2.lastModified()));
+            for (int i = 0; i < logs.length - 5; i++) {
+                logs[i].renameTo(new File("logs/archived/" + logs[i].getName()));
+                logs[i].delete();
+            }
+        }
 
         System.out.println("Algorithms:\n(1) Brute Force\n(2) Algo 1");
         System.out.print("Choose an algorithm: ");
@@ -19,41 +32,50 @@ public class Main {
         System.out.print("Verbose output (y/n)? ");
         boolean verbose = in.next().toLowerCase(Locale.ROOT).charAt(0) == 'y';
 
-        System.out.print("Check for up to N cheques? ");
+        System.out.print("Run for which numbers (end, step, start): ");
         in.nextLine();
-        String input = in.nextLine().strip();
+        String input = in.nextLine().strip().replace(",", "");
         Scanner in2 = new Scanner(input);
         int numCheques = in2.nextInt();
         int step;
+        int start;
         if (in2.hasNextInt())
             step = in2.nextInt();
         else
             step = 2;
+        if (in2.hasNextInt())
+            start = in2.nextInt();
+        else
+            start = 2;
         in2.close();
 
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd-HH-mm-ss");
         LocalDateTime now = LocalDateTime.now();
 
-        File f = new File("logs\\" + dtf.format(now) + ".log");
+        File f = new File("logs/" + dtf.format(now) + ".log");
         f.createNewFile();
 
-        try (PrintStream logger = new PrintStream(f)) {
-            for (int i = Math.max(2,step); i <= numCheques; i += step) {
-                long start = System.currentTimeMillis();
+        try (PrintWriter out = new PrintWriter(f)) {
+            out.println("Algorithm: " + algorithm + "\nStart: " + start + "\nEnd: " + numCheques + "\nStep: " + step);
+        }
 
-                Game game = new Game(i);
-                Game bestGame = switch (algorithm) {
-                    case 1 -> bruteForceBestGame(game);
-                    case 2 -> algo1(game);
-                    default -> game;
-                };
+        for (int i = Math.max(2, start); i <= numCheques; i += step) {
+            long startTime = System.currentTimeMillis();
 
-                String output = verbose ? i + " cheques: Profit of $" + bestGame.playerProfit + ", using moves: " + bestGame.moves + " (" + (System.currentTimeMillis() - start) + "ms)" : String.format("%-4s| $%s", i, bestGame.playerProfit);
+            Game game = new Game(i);
+            Game bestGame = switch (algorithm) {
+                case 1 -> bruteForceBestGame(game);
+                case 2 -> algo1(game);
+                default -> game;
+            };
+
+            // Print and log output
+            try (PrintWriter logger = new PrintWriter(new FileOutputStream(f, true))) {
+                String output = verbose ? i + " cheques: Profit of $" + bestGame.playerProfit + ", using moves: " + bestGame.moves + " (" + (System.currentTimeMillis() - startTime) + "ms)" : String.format("%-4s| $%s", i, bestGame.playerProfit);
+
                 logger.println(output);
                 System.out.println(output);
             }
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
         }
     }
 
@@ -109,16 +131,15 @@ public class Main {
                     max = games.get(i);
 
             return max;
-        }
-        else {
+        } else {
             return game;
         }
     }
 
     public static ArrayList<Integer> factors(int i) {
         ArrayList<Integer> factorsList = new ArrayList<>();
-        for (int j = 1; j <= i/2; j++)
-            if (i%j==0)
+        for (int j = 1; j <= i / 2; j++)
+            if (i % j == 0)
                 factorsList.add(j);
         return factorsList;
     }
