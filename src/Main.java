@@ -5,6 +5,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 public class Main {
+    static int countOfScenarios = 0;
+
     public static void main(String[] args) throws CloneNotSupportedException, IOException {
         Scanner in = new Scanner(System.in);
 
@@ -71,11 +73,14 @@ public class Main {
 
             // Print and log output
             try (PrintWriter logger = new PrintWriter(new FileOutputStream(f, true))) {
-                String output = verbose ? i + " cheques: Profit of $" + bestGame.playerProfit + ", using moves: " + bestGame.moves + " (" + (System.currentTimeMillis() - startTime) + "ms)" : String.format("%-4s| $%s", i, bestGame.playerProfit);
+                String output = verbose ? i + " cheques: Profit of $" + bestGame.playerProfit + ", using moves: " + bestGame.moves + " (" + (System.currentTimeMillis() - startTime) + "ms, " + countOfScenarios + " ways tested)" : String.format("%-4s| $%s", i, bestGame.playerProfit);
 
                 logger.println(output);
                 System.out.println(output);
             }
+
+            // Clear count
+            countOfScenarios = 0;
         }
     }
 
@@ -132,6 +137,7 @@ public class Main {
 
             return max;
         } else {
+            countOfScenarios++;
             return game;
         }
     }
