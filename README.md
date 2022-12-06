@@ -19,4 +19,5 @@ Here I will paste all solutions my code has generated. These solutions are not n
 30 cheques: Profit of $301, using moves: [29, 22, 25, 15, 21, 26, 27, 18, 30, 20, 16, 24, 28] (755594ms)\
 32 cheques: Profit of $319, using moves: [31, 22, 25, 15, 21, 26, 27, 18, 30, 20, 24, 28, 32] (2838272ms)\
 34 cheques: Profit of $386, using moves: [31, 25, 15, 21, 27, 33, 22, 18, 26, 30, 20, 24, 28, 32, 34] (53592377ms)\
-36 cheques: Profit of $442, using moves: [31, 25, 35, 21, 27, 33, 22, 18, 20, 26, 28, 30, 34, 36, 24, 32] (316459071ms)
+36 cheques: Profit of $442, using moves: [31, 25, 35, 21, 27, 33, 22, 18, 20, 26, 28, 30, 34, 36, 24, 32] (316459071ms)\
+38 cheques: Profit of $486, using moves: [37, 25, 35, 21, 27, 33, 22, 18, 20, 26, 28, 30, 34, 36, 24, 32, 38] (4263483603ms, 644248428 ways tested)
